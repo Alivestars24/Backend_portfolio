@@ -2,6 +2,7 @@ package com.springboot.blog.config;
 
 import com.springboot.blog.security.JwtAuthenticationEntryPoint;
 import com.springboot.blog.security.JwtAuthenticationFilter;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +35,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 )
 public class SecurityConfig implements WebMvcConfigurer {
 
+    // Dotenv Config to load environment variables from .env file
+    static {
+        Dotenv dotenv = Dotenv.configure()
+                .filename(".env") // Ensure this matches the name of your file
+                .load();
+        dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
+    }
+
     private UserDetailsService userDetailsService;
 
     private JwtAuthenticationEntryPoint authenticationEntryPoint;
@@ -42,14 +51,14 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     public SecurityConfig(UserDetailsService userDetailsService,
                           JwtAuthenticationEntryPoint authenticationEntryPoint,
-                          JwtAuthenticationFilter authenticationFilter){
+                          JwtAuthenticationFilter authenticationFilter) {
         this.userDetailsService = userDetailsService;
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.authenticationFilter = authenticationFilter;
     }
 
     @Bean
-    public static PasswordEncoder passwordEncoder(){
+    public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -79,7 +88,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         return http.build();
     }
 
-    // CORS Configuration - Add to your existing SecurityConfig
+    // CORS Configuration
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Allow all endpoints

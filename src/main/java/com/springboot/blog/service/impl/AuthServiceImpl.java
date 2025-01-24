@@ -114,17 +114,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String register(RegisterDto registerDto) {
-        System.out.println("HEllo world ");
+        System.out.println("Hello world");
 
-
-        // add check for username exists in database
-        if(userRepository.existsByUsername(registerDto.getUsername())){
-            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Username is already exists!.");
+        // Check if username exists in the database
+        if (userRepository.existsByUsername(registerDto.getUsername())) {
+            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Username already exists!");
         }
 
-        // add check for email exists in database
-        if(userRepository.existsByEmail(registerDto.getEmail())){
-            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Email is already exists!.");
+        // Check if email exists in the database
+        if (userRepository.existsByEmail(registerDto.getEmail())) {
+            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Email already exists!");
         }
 
         User user = new User();
@@ -134,14 +133,21 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(registerDto.getEmail());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 
+        // Set a default role as "ROLE_USER"
+        Role userRole = roleRepository.findByName("ROLE_USER").orElseGet(() -> {
+            // Create and save the role if it doesn't exist
+            Role newRole = new Role();
+            newRole.setName("ROLE_USER");
+            return roleRepository.save(newRole);
+        });
+
         Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findByName("ROLE_USER").get();
         roles.add(userRole);
         user.setRoles(roles);
 
         userRepository.save(user);
 
-        return "User registered successfully!.";
+        return "User registered successfully!";
     }
 
     @Override
