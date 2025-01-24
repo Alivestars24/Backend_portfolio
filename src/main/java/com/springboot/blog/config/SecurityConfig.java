@@ -39,6 +39,8 @@ public class SecurityConfig implements WebMvcConfigurer {
     static {
         Dotenv dotenv = Dotenv.configure()
                 .filename(".env") // Ensure this matches the name of your file
+                .ignoreIfMalformed()
+                .ignoreIfMissing()
                 .load();
         dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
     }
