@@ -9,6 +9,5 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar demo.jar
-COPY .env .env  # Optional: Include .env file in the image
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "demo.jar"]
